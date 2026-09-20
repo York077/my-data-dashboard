@@ -1,75 +1,103 @@
-
 <!DOCTYPE html>
 <html lang='zh'>
 <head>
-    <meta charset='UTF-8'>
-    <title>公司业绩全功能管理大屏 - V3 最终修正版</title>
+    <meta charset='UTF-8'><title>公司数据管理大屏 - 工业级全功能版</title>
     <style>
-        :root { --bg: #050a0f; --panel: #0d161f; --accent: #00d2ff; --green: #00ff88; --orange: #ff9f43; --red: #ff4d4d; --text: #e0e6ed; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; }
-        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; flex: 1; }
-        .panel { background: var(--panel); border: 1px solid #1a2a3a; border-radius: 12px; padding: 20px; box-shadow: 0 0 15px rgba(0,210,255,0.1); }
-        .panel-title { font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 20px; border-left: 5px solid var(--accent); padding-left: 12px; }
-        .kpi-box { margin-bottom: 20px; }
-        .kpi-label { font-size: 14px; color: #8492a6; margin-bottom: 5px; }
-        .kpi-value { font-size: 32px; font-weight: bold; color: var(--green); }
-        .bar-bg { background: #1a2a3a; height: 10px; border-radius: 5px; margin: 10px 0; position: relative; }
-        .bar-fill { height: 100%; border-radius: 5px; transition: width 1s; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { text-align: left; padding: 12px 8px; border-bottom: 1px solid #1a2a3a; }
-        th { color: #8492a6; font-size: 14px; }
-        .tag { padding: 3px 8px; border-radius: 4px; font-size: 12px; }
+        :root { --bg: #05080b; --card: #0d141d; --accent: #00d2ff; --green: #00ff88; --orange: #ffa500; --red: #ff4d4d; --text: #e0e6ed; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; margin:0; padding:15px; display:flex; flex-direction:column; height:100vh; overflow:hidden; box-sizing:border-box; }
+        .header { display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--accent); margin-bottom:10px; height:50px; }
+        .grid-container { display:grid; grid-template-columns: 1fr 1.5fr 1fr; grid-template-rows: 1.2fr 1.2fr 0.8fr; gap: 15px; flex:1; min-height:0; }
+        .panel { background: var(--card); border: 1px solid #1c2b3a; border-radius: 10px; padding: 12px; position:relative; overflow:hidden; }
+        .panel-title { font-size: 15px; font-weight: bold; border-left: 4px solid var(--accent); padding-left:8px; margin-bottom:12px; color: var(--accent); }
+        .kpi-row { display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px; }
+        .kpi-main { font-size:24px; font-weight:bold; color:var(--green); }
+        .bar-wrap { background:#1c2b3a; height:6px; border-radius:3px; margin:5px 0 10px 0; }
+        .bar-in { height:100%; border-radius:3px; transition:1s; }
+        table { width:100%; border-collapse:collapse; font-size:12px; }
+        th, td { text-align:left; padding:6px 4px; border-bottom:1px solid #1c2b3a; }
+        .badge { padding:2px 5px; border-radius:3px; font-size:10px; font-weight:bold; }
     </style>
 </head>
 <body>
     <div class='header'>
-        <h2>天之圣外贸服务(广东)有限公司 - 实时业绩看板 (V3 最终版)</h2>
-        <div style='color: #8492a6;'>同步时间：2026-09-20 16:15 | 关键词：进度</div>
+        <h2 id='c-name' style='margin:0;'>载入中...</h2>
+        <div id='u-time' style='font-size:13px; color:#8492a6;'></div>
     </div>
-    <div class='main-grid'>
+    <div class='grid-container'>
+        <!-- I 公司概览 -->
         <div class='panel'>
-            <div class='panel-title'>Ⅰ 公司大盘 (Q2)</div>
-            <div class='kpi-box'><div class='kpi-label'>💰 大资金实收 (115%考核)</div><div class='kpi-value'>$59,888,546</div><div class='bar-bg'><div class='bar-fill' style='width:84.2%; background:var(--accent);'></div></div><div style='font-size:12px;'>完成率: 84.2% | 目标: $71,128,111</div></div>
-            <div class='kpi-box'><div class='kpi-label'>🛡️ 信保贴网实收</div><div class='kpi-value' style='font-size:24px;'>$49,402,946</div><div style='font-size:12px;'>目标: $61,850,531 | 完成率: 79.9%</div></div>
-            <div class='kpi-box'><div class='kpi-label'>📈 ACP 关联规模</div><div class='kpi-value' style='font-size:24px;'>$10,485,600</div><div style='font-size:12px;'>目标: $12,226,071 | 完成率: 85.8%</div></div>
+            <div class='panel-title'>Ⅰ 公司概览 (KPI看板)</div>
+            <div class='kpi-row'><span>💰 大资金实收 (115%)</span><span class='kpi-main' id='h-bf'>$0</span></div>
+            <div class='kpi-row'><span>🛡️ 信保贴网实收</span><span id='h-lb'>$0</span></div>
+            <div class='kpi-row'><span>📈 ACP 关联规模</span><span id='h-acp'>$0</span></div>
+            <div class='kpi-row'><span>👥 活跃客户数</span><span id='h-cli'>0</span></div>
+            <div class='kpi-row'><span>🔥 优爆品数量</span><span id='h-prd'>0</span></div>
         </div>
+        <!-- II 核心分析 -->
         <div class='panel'>
-            <div class='panel-title'>Ⅳ 员工业绩榜 (9月)</div>
-            <div style='overflow-y:auto; max-height: 85%;'>
+            <div class='panel-title'>Ⅱ 核心分析与冲刺预警</div>
+            <div id='a-text' style='font-size:13px; line-height:1.6; color:#b0c4de;'>数据计算中...</div>
+        </div>
+        <!-- III 个人进度 (月/季双条) -->
+        <div class='panel' style='grid-row: span 2;'>
+            <div class='panel-title'>Ⅲ 个人业绩进度 (月/季双榜)</div>
+            <div id='p-bars' style='overflow-y:auto; height:90%;'></div>
+        </div>
+        <!-- IV GMV 排行榜 -->
+        <div class='panel' style='grid-column: span 2;'>
+            <div class='panel-title'>Ⅳ 员工业绩排行榜 (9月实收)</div>
+            <div style='overflow-y:auto; height:85%;'>
                 <table>
-                    <thead><tr><th>排名</th><th>姓名</th><th>实收(USD)</th><th>完成率</th><th>状态</th></tr></thead>
-                    <tbody id='rows'></tbody>
+                    <thead><tr><th>排名</th><th>姓名</th><th>9月实收</th><th>完成率</th><th>季度完成率</th><th>状态</th></tr></thead>
+                    <tbody id='r-tbody'></tbody>
                 </table>
             </div>
         </div>
+        <!-- V 活跃客户分布 -->
         <div class='panel'>
-            <div class='panel-title'>Ⅱ 核心分析</div>
-            <div style='line-height:1.8; color:#b0c4de; font-size:15px;'>
-                大资金当前进度 <b>84.2%</b>。<br>
-                🚨 <b>日均冲刺缺口：$1,012,573</b><br><br>
-                截止美西时间 9/30，建议：<br>
-                1. 罗丽如表现领先，其模式可复用于其他小组。<br>
-                2. ACP 业务目前表现平稳(85.8%)，需继续保持。<br>
-                3. 整体缺口仍有千万美金，请全员开启战时模式。
-            </div>
+            <div class='panel-title'>Ⅴ 活跃客户人均分布</div>
+            <div id='c-dist' style='display:grid; grid-template-columns:1fr 1fr; gap:5px; font-size:12px;'></div>
+        </div>
+        <!-- VI 优爆品达成 -->
+        <div class='panel' style='grid-column: span 2;'>
+            <div class='panel-title'>Ⅵ 优爆品达成贡献榜 (季度)</div>
+            <div id='prd-list' style='display:flex; flex-wrap:wrap; gap:10px; font-size:12px;'></div>
         </div>
     </div>
     <script>
-        const employees = [
-            {n: '罗丽如', v: 2739147, p: 74}, {n: '陈海胜', v: 2552554, p: 62},
-            {n: '李海', v: 2483185, p: 56}, {n: '吴振豪', v: 1004458, p: 55},
-            {n: '陈春', 'v': 376064, p: 40}, {n: '萧见乐', v: 402351, p: 39},
-            {n: '林文浩', v: 2069017, p: 38}, {n: '简智强', v: 92834, p: 38},
-            {n: '尹文莉', v: 206786, p: 32}, {n: '黄锐强', v: 281871, p: 30},
-            {n: '张跃', v: 46820, p: 0}
-        ];
-        const rows = document.getElementById('rows');
-        employees.sort((a,b)=>b.p-a.p).forEach((e,i)=>{
+        const d = {"update_time": "2026-09-20 16:45", "company": {"name": "天之圣外贸服务(广东)有限公司", "quarter": "FY27Q2", "big_fund": {"val": 59888546, "target": 71128111, "pct": 84.2, "gap_daily": 1012573}, "libao": {"val": 49402946, "target": 61850531, "pct": 79.8}, "acp": {"val": 10485600, "target": 12226071, "pct": 85.8}, "active_clients": {"val": 878, "target": 1000, "pct": 87.8}, "top_products": {"val": 48650, "target": 54149, "pct": 89.8}}, "employees": [{"name": "罗丽如", "m_val": 2739147, "m_pct": 74, "q_val": 11014421, "q_target": 9732711, "q_pct": 113, "clients": 108, "prods": 7966}, {"name": "陈海胜", "m_val": 2552554, "m_pct": 62, "q_val": 8148771, "q_target": 11462639, "q_pct": 71, "clients": 101, "prods": 6648}, {"name": "李海", "m_val": 2483185, "m_pct": 56, "q_val": 10332425, "q_target": 11813544, "q_pct": 87, "clients": 99, "prods": 8893}, {"name": "林文浩", "m_val": 2069017, "m_pct": 38, "q_val": 10904985, "q_target": 15227443, "q_pct": 72, "clients": 91, "prods": 7517}, {"name": "吴振豪", "m_val": 1004458, "m_pct": 55, "q_val": 3555490, "q_target": 5127688, "q_pct": 69, "clients": 96, "prods": 5325}, {"name": "萧见乐", "m_val": 402351, "m_pct": 39, "q_val": 1877277, "q_target": 2710246, "q_pct": 69, "clients": 84, "prods": 3880}, {"name": "陈春", "m_val": 376064, "m_pct": 40, "q_val": 1575355, "q_target": 2472182, "q_pct": 64, "clients": 87, "prods": 3304}, {"name": "黄锐强", "m_val": 281871, "m_pct": 30, "q_val": 1597449, "q_target": 2493188, "q_pct": 64, "clients": 83, "prods": 3030}, {"name": "简智强", "m_val": 92834, "m_pct": 38, "q_val": 519598, "q_target": 684461, "q_pct": 76, "clients": 82, "prods": 1699}, {"name": "尹文莉", "m_val": 206786, "m_pct": 32, "q_val": 360118, "q_target": 126429, "q_pct": 285, "clients": 38, "prods": 388}, {"name": "张跃", "m_val": 46820, "m_pct": 0, "q_val": 46820, "q_target": 0, "q_pct": 0, "clients": 0, "prods": 0}]};
+        const getC = p => p>=80?'var(--green)':(p>=50?'var(--orange)':'var(--red)');
+        const fmt = v => '$'+v.toLocaleString();
+        document.getElementById('c-name').textContent = d.company.name + ' - ' + d.company.quarter;
+        document.getElementById('u-time').textContent = '更新时间：' + d.update_time;
+        document.getElementById('h-bf').textContent = fmt(d.company.big_fund.val);
+        document.getElementById('h-lb').textContent = fmt(d.company.libao.val);
+        document.getElementById('h-acp').textContent = fmt(d.company.acp.val);
+        document.getElementById('h-cli').textContent = d.company.active_clients.val;
+        document.getElementById('h-prd').textContent = d.company.top_products.val;
+        document.getElementById('a-text').innerHTML = `大资金当前完成率 <b>${d.company.big_fund.pct}%</b>。<br>🚨 <b>日均冲刺缺口：${fmt(d.company.big_fund.gap_daily)}</b><br><br>优爆品达成率 <b>${d.company.top_products.pct}%</b>，表现优异。请重点关注 ACP 的季度末补位。`;
+
+        const rT = document.getElementById('r-tbody');
+        const pB = document.getElementById('p-bars');
+        d.employees.sort((a,b)=>b.m_val-a.m_val).forEach((e,i)=>{
             const tr = document.createElement('tr');
-            const clr = e.p>=66?'var(--green)':'var(--red)';
-            tr.innerHTML = `<td>${i+1}</td><td>${e.n}</td><td>$${e.v.toLocaleString()}</td><td style='color:${clr}'>${e.p}%</td><td><span class='tag' style='background:${clr}22; color:${clr}'>${e.p>=66?'达标':'预警'}</span></td>`;
-            rows.appendChild(tr);
+            tr.innerHTML = `<td>${i+1}</td><td>${e.name}</td><td>${fmt(e.m_val)}</td><td style='color:${getC(e.m_pct)}'>${e.m_pct}%</td><td style='color:${getC(e.q_pct)}'>${e.q_pct}%</td><td><span class='badge' style='background:${getC(e.m_pct)}22; color:${getC(e.m_pct)}'>${e.m_pct>=66?'达标':'预警'}</span></td>`;
+            rT.appendChild(tr);
+
+            const row = document.createElement('div');
+            row.style.marginBottom='10px';
+            row.innerHTML = `<div style='font-size:12px;'>${e.name} (月:${e.m_pct}% | 季:${e.q_pct}%)</div>
+                             <div class='bar-wrap'><div class='bar-in' style='width:${Math.min(e.m_pct,100)}%; background:${getC(e.m_pct)}'></div></div>
+                             <div class='bar-wrap' style='margin-top:-6px;'><div class='bar-in' style='width:${Math.min(e.q_pct,100)}%; background:${getC(e.q_pct)}; height:3px;'></div></div>`;
+            pB.appendChild(row);
+
+            const cD = document.createElement('div');
+            cD.innerHTML = `${e.name}: <b style='color:var(--accent)'>${e.clients}</b>`;
+            document.getElementById('c-dist').appendChild(cD);
+
+            const pL = document.createElement('div');
+            pL.innerHTML = `<span class='badge' style='background:#1c2b3a; color:#fff;'>${e.name}: ${e.prods}</span>`;
+            document.getElementById('prd-list').appendChild(pL);
         });
     </script>
 </body>
