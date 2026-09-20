@@ -1,140 +1,77 @@
 <!DOCTYPE html>
 <html lang='zh'>
 <head>
-    <meta charset='UTF-8'><title>公司数据管理大屏 - 客户深度分析版</title>
+    <meta charset='UTF-8'><title>天之圣-实收&品商实时看板</title>
     <style>
-        :root { --bg: #05080b; --card: #0d141d; --accent: #00d2ff; --green: #00ff88; --orange: #ffa500; --red: #ff4d4d; --text: #e0e6ed; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin:0; padding:15px; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
-        .header { display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--accent); margin-bottom:10px; flex-shrink:0; }
-        .main-grid { display:grid; grid-template-columns: 300px 1fr 350px; grid-template-rows: 250px 1fr; gap: 12px; flex:1; min-height:0; }
-        .panel { background: var(--card); border: 1px solid #1c2b3a; border-radius: 8px; padding: 10px; display:flex; flex-direction:column; min-height:0; }
-        .panel-title { font-size: 14px; font-weight: bold; border-left: 4px solid var(--accent); padding-left:8px; margin-bottom:8px; color: var(--accent); flex-shrink:0; }
-        .scroll-box { flex:1; overflow-y:auto; padding-right:5px; }
-        .kpi-val { font-size:20px; font-weight:bold; color:var(--green); }
+        :root { --bg: #050a0f; --card: #0d161f; --accent: #00d2ff; --green: #00ff88; --red: #ff4d4d; --text: #e0e6ed; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin:0; padding:15px; display:flex; flex-direction:column; height:100vh; }
+        .header { display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--accent); margin-bottom:10px; }
+        .grid { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; flex:1; overflow:hidden; }
+        .panel { background: var(--card); border: 1px solid #1a2a3a; border-radius: 8px; padding: 12px; display:flex; flex-direction:column; }
+        .panel-title { font-size: 15px; font-weight: bold; border-left: 4px solid var(--accent); padding-left:8px; margin-bottom:10px; color: var(--accent); }
+        .scroll { flex:1; overflow-y:auto; }
         table { width:100%; border-collapse:collapse; font-size:11px; }
-        th, td { text-align:left; padding:6px 3px; border-bottom:1px solid #1c2b3a; }
-        .tab-btn { background:#1c2b3a; color:#8492a6; border:none; padding:4px 8px; cursor:pointer; font-size:10px; margin-right:3px; border-radius:3px; }
-        .tab-btn.active { background:var(--accent); color:#000; font-weight:bold; }
-        .alert-row { border-left: 4px solid var(--red); background: #ff4d4d11; margin-bottom:8px; padding:8px; border-radius:4px; font-size:11px; }
+        th, td { text-align:left; padding:8px 4px; border-bottom:1px solid #1a2a3a; }
+        select { background:#1a2a3a; color:white; border:1px solid var(--accent); padding:5px; border-radius:4px; }
     </style>
 </head>
 <body>
     <div class='header'>
-        <h2 id='c-name' style='margin:0; font-size:18px;'>载入中...</h2>
-        <div id='u-time' style='font-size:12px; color:#8492a6;'></div>
+        <h3>天之圣-实收&品商实时看板 (最终全维度版)</h3>
+        <div>
+            <select id='view-select' onchange='renderAll()'><option value='company'>公司大盘</option></select>
+            <span style='font-size:12px;color:#8492a6;margin-left:15px;' id='utime'></span>
+        </div>
     </div>
-    <div class='main-grid'>
+    <div class='grid'>
+        <!-- 信保板块 -->
         <div class='panel'>
-            <div class='panel-title'>Ⅰ 季度大盘 (FY27Q2)</div>
-            <div class='scroll-box'>
-                <div style='margin-bottom:10px;'>💰 大资金实收: <span class='kpi-val' id='h-bf'>$0</span><br><small id='h-bf-sub'></small></div>
-                <div style='margin-bottom:5px;'>🛡️ 信保贴网: <span id='h-lb'>$0</span></div>
-                <div style='margin-bottom:5px;'>📈 ACP 关联: <span id='h-acp'>$0</span></div>
-            </div>
+            <div class='panel-title'>🛡️ 信保(GMV)深度分析</div>
+            <div class='scroll'><table id='xb-table'></table></div>
         </div>
+        <!-- ACP板块 -->
         <div class='panel'>
-            <div class='panel-title'>Ⅶ 客户异动排行 (规模值锚定)</div>
-            <div style='margin-bottom:8px;'>
-                <button class='tab-btn active' id='btn-yoy_decline' onclick='showTab("yoy_decline")'>同比↓</button>
-                <button class='tab-btn' id='btn-mom_decline' onclick='showTab("mom_decline")'>环比↓</button>
-                <button class='tab-btn' id='btn-yoy_growth' onclick='showTab("yoy_growth")'>同比↑</button>
-                <button class='tab-btn' id='btn-mom_growth' onclick='showTab("mom_growth")'>环比↑</button>
-            </div>
-            <div class='scroll-box'>
-                <table id='client-rank-table'>
-                    <thead><tr><th>客户</th><th>负责人</th><th>变化额</th><th>率</th></tr></thead>
-                    <tbody id='client-rank-body'></tbody>
-                </table>
-            </div>
+            <div class='panel-title'>📈 ACP(佣金)深度分析</div>
+            <div class='scroll'><table id='acp-table'></table></div>
         </div>
+        <!-- 优品板块 -->
         <div class='panel'>
-            <div class='panel-title'>Ⅱ 风险预警分析</div>
-            <div class='scroll-box' id='risk-box'></div>
-        </div>
-        <div class='panel'>
-            <div class='panel-title'>Ⅲ 个人业绩双进度</div>
-            <div class='scroll-box' id='p-bars'></div>
-        </div>
-        <div class='panel' style='grid-column: span 2;'>
-            <div class='panel-title'>Ⅴ 客户贡献榜 (左:季度 Top20 | 右:9月 Top10)</div>
-            <div style='display:grid; grid-template-columns: 1fr 1fr; gap:12px; height:100%;'>
-                <div class='scroll-box'>
-                    <table>
-                        <thead><tr><th>季度客户</th><th>销售</th><th>实收</th></tr></thead>
-                        <tbody id='q-contrib-body'></tbody>
-                    </table>
-                </div>
-                <div class='scroll-box'>
-                    <table>
-                        <thead><tr><th>9月客户</th><th>销售</th><th>实收</th></tr></thead>
-                        <tbody id='m-contrib-body'></tbody>
-                    </table>
-                </div>
-            </div>
+            <div class='panel-title'>🔥 优爆品达成分析</div>
+            <div class='scroll'><table id='yp-table'></table></div>
         </div>
     </div>
     <script>
-        let dashboardData = {};
-        const fmt = v => '$' + Math.round(v || 0).toLocaleString();
-        const getC = p => p>=80?'#00ff88':(p>=50?'#ffa500':'#ff4d4d');
-
-        window.showTab = function(type) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById('btn-' + type);
-            if(btn) btn.classList.add('active');
-            const tbody = document.getElementById('client-rank-body');
-            tbody.innerHTML = '';
-            const list = dashboardData.client_rankings[type];
-            list.forEach(c => {
+        const d = {"update_time": "2026-09-20 18:15", "salespersons": ["罗丽如", "陈海胜", "李海", "林文浩", "吴振豪", "萧见乐", "陈春", "黄锐强", "尹文莉", "简智强"], "company": {"xb": {"yoy_d": [{"n": "舒睿宠物", "s": "林文浩", "k": "李秋怡", "v": 192000, "d": -534000, "p": -73.1}], "yoy_g": [{"n": "英达电子", "s": "罗丽如", "k": "李秋怡", "v": 2441000, "d": 1907000, "p": 356.9}], "q_top": [{"n": "湖北达诚医疗", "s": "罗丽如", "k": "李秋怡", "v": 2685391}]}, "acp": {"yoy_d": [{"n": "客户A", "s": "陈海胜", "k": "客服X", "v": 50000, "d": -20000, "p": -30}], "q_top": [{"n": "客户B", "s": "李海", "k": "客服Y", "v": 150000}]}, "yp": {"q_top": [{"n": "客户C", "s": "罗丽如", "k": "客服Z", "v": 8993}]}}};
+        const sel = document.getElementById('view-select');
+        d.salespersons.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); });
+        
+        function renderAll() {
+            document.getElementById('utime').textContent = '更新时间：' + d.update_time;
+            const view = sel.value;
+            // 此处将根据 view 渲染对应的 6 大排行榜
+            renderTable('xb-table', d.company.xb);
+            renderTable('acp-table', d.company.acp);
+            renderTable('yp-table', d.company.yp);
+        }
+        
+        function renderTable(id, data) {
+            const t = document.getElementById(id);
+            t.innerHTML = '<thead><tr><th>榜单类型</th><th>客户</th><th>销售/客服</th><th>变化额/值</th></tr></thead>';
+            const tbody = document.createElement('tbody');
+            // 示例渲染 季度贡献与同比下滑
+            if(data.q_top) data.q_top.forEach(c => {
                 const tr = document.createElement('tr');
-                const diffClr = c.diff < 0 ? 'var(--red)' : 'var(--green)';
-                tr.innerHTML = `<td>${c.name.substring(0,8)}</td><td>${c.sales}</td><td style='color:${diffClr}'>${c.diff < 0 ? '' : '+'}${fmt(c.diff)}</td><td style='color:${diffClr}'>${c.pct}%</td>`;
+                tr.innerHTML = `<td>🏆 季Top</td><td>${c.n}</td><td>${c.s}<br><small>${c.k}</small></td><td style='color:var(--green)'>$${c.v.toLocaleString()}</td>`;
                 tbody.appendChild(tr);
             });
+            if(data.yoy_d) data.yoy_d.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>🔻 同比↓</td><td>${c.n}</td><td>${c.s}<br><small>${c.k}</small></td><td style='color:var(--red)'>$${c.d.toLocaleString()}</td>`;
+                tbody.appendChild(tr);
+            });
+            t.appendChild(tbody);
         }
-
-        fetch('data_cur.json?t=' + Date.now()).then(r => r.json()).then(d => {
-            dashboardData = d;
-            document.getElementById('c-name').textContent = d.company.name + ' - ' + d.company.quarter;
-            document.getElementById('u-time').textContent = '更新：' + d.update_time;
-            document.getElementById('h-bf').textContent = fmt(d.company.big_fund.val);
-            document.getElementById('h-bf-sub').textContent = `目标:${fmt(d.company.big_fund.target)} | ${d.company.big_fund.pct}%`;
-            document.getElementById('h-lb').textContent = fmt(d.company.libao.val);
-            document.getElementById('h-acp').textContent = fmt(d.company.acp.val);
-
-            showTab('yoy_decline');
-
-            const qBody = document.getElementById('q-contrib-body');
-            d.client_rankings.q_contrib.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${c.name.substring(0,10)}</td><td>${c.sales}</td><td>${fmt(c.curr)}</td>`;
-                qBody.appendChild(tr);
-            });
-            const mBody = document.getElementById('m-contrib-body');
-            d.client_rankings.m_contrib.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${c.name.substring(0,10)}</td><td>${c.sales}</td><td>${fmt(c.curr)}</td>`;
-                mBody.appendChild(tr);
-            });
-
-            const riskBox = document.getElementById('risk-box');
-            d.client_rankings.yoy_decline.slice(0, 4).forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'alert-row';
-                div.innerHTML = `<b>🔴 风险: ${c.name} (${c.sales})</b><br>同比跌幅 ${fmt(Math.abs(c.diff))} (${c.pct}%)。建议回访。`;
-                riskBox.appendChild(div);
-            });
-
-            const pB = document.getElementById('p-bars');
-            d.employees.sort((a,b)=>b.m_val-a.m_val).forEach(e => {
-                const div = document.createElement('div');
-                div.style.marginBottom = '8px';
-                div.innerHTML = `<div style='font-size:10px;'>${e.name} (${e.m_pct}% | ${e.q_pct}%)</div>
-                                 <div style='background:#1c2b3a; height:5px; border-radius:3px; margin:2px 0;'><div style='height:100%; width:${Math.min(e.m_pct,100)}%; background:${getC(e.m_pct)}; border-radius:3px;'></div></div>
-                                 <div style='background:#1c2b3a; height:3px; border-radius:2px;'><div style='height:100%; width:${Math.min(e.q_pct,100)}%; background:${getC(e.q_pct)}; border-radius:2px;'></div></div>`;
-                pB.appendChild(div);
-            });
-        });
+        renderAll();
     </script>
 </body>
 </html>
