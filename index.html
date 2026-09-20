@@ -1,78 +1,75 @@
+
 <!DOCTYPE html>
 <html lang='zh'>
 <head>
     <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>公司业务数据实时大屏</title>
+    <title>公司业绩全功能管理大屏 - V3 最终修正版</title>
     <style>
-        :root { --bg: #0b0f1a; --card: #161b29; --accent: #00d2ff; --green: #00ff88; --red: #ff4d4d; --text: #e0e6ed; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; margin: 0; padding: 20px; }
+        :root { --bg: #050a0f; --panel: #0d161f; --accent: #00d2ff; --green: #00ff88; --orange: #ff9f43; --red: #ff4d4d; --text: #e0e6ed; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .card { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid #2d3343; }
-        .big-number { font-size: 32px; font-weight: bold; color: var(--accent); margin: 10px 0; }
-        .progress-container { background: #2d3343; border-radius: 10px; height: 10px; margin: 15px 0; position: relative; }
-        .progress-bar { height: 100%; border-radius: 10px; transition: width 1s; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #2d3343; }
-        .rank-1 { color: #ffd700; }
-        .pct-tag { padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .main-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 20px; flex: 1; }
+        .panel { background: var(--panel); border: 1px solid #1a2a3a; border-radius: 12px; padding: 20px; box-shadow: 0 0 15px rgba(0,210,255,0.1); }
+        .panel-title { font-size: 18px; font-weight: bold; color: var(--accent); margin-bottom: 20px; border-left: 5px solid var(--accent); padding-left: 12px; }
+        .kpi-box { margin-bottom: 20px; }
+        .kpi-label { font-size: 14px; color: #8492a6; margin-bottom: 5px; }
+        .kpi-value { font-size: 32px; font-weight: bold; color: var(--green); }
+        .bar-bg { background: #1a2a3a; height: 10px; border-radius: 5px; margin: 10px 0; position: relative; }
+        .bar-fill { height: 100%; border-radius: 5px; transition: width 1s; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 12px 8px; border-bottom: 1px solid #1a2a3a; }
+        th { color: #8492a6; font-size: 14px; }
+        .tag { padding: 3px 8px; border-radius: 4px; font-size: 12px; }
     </style>
 </head>
 <body>
     <div class='header'>
-        <h2 id='company-name'>载入中...</h2>
-        <div id='update-time' style='color: #8492a6;'>更新时间：--</div>
+        <h2>天之圣外贸服务(广东)有限公司 - 实时业绩看板 (V3 最终版)</h2>
+        <div style='color: #8492a6;'>同步时间：2026-09-20 16:15 | 关键词：进度</div>
     </div>
-    <div class='grid'>
-        <div class='card'>
-            <h3>💰 大资金进展 (115%考核)</h3>
-            <div class='big-number' id='big-fund-val'>$0</div>
-            <div class='progress-container'><div id='big-fund-bar' class='progress-bar' style='background: #00d2ff;'></div></div>
-            <div style='display:flex;justify-content:space-between;font-size:12px;'>
-                <span>完成度: <b id='big-fund-pct'>0%</b></span>
-                <span>目标: <span id='big-fund-target'>$0</span></span>
+    <div class='main-grid'>
+        <div class='panel'>
+            <div class='panel-title'>Ⅰ 公司大盘 (Q2)</div>
+            <div class='kpi-box'><div class='kpi-label'>💰 大资金实收 (115%考核)</div><div class='kpi-value'>$59,888,546</div><div class='bar-bg'><div class='bar-fill' style='width:84.2%; background:var(--accent);'></div></div><div style='font-size:12px;'>完成率: 84.2% | 目标: $71,128,111</div></div>
+            <div class='kpi-box'><div class='kpi-label'>🛡️ 信保贴网实收</div><div class='kpi-value' style='font-size:24px;'>$49,402,946</div><div style='font-size:12px;'>目标: $61,850,531 | 完成率: 79.9%</div></div>
+            <div class='kpi-box'><div class='kpi-label'>📈 ACP 关联规模</div><div class='kpi-value' style='font-size:24px;'>$10,485,600</div><div style='font-size:12px;'>目标: $12,226,071 | 完成率: 85.8%</div></div>
+        </div>
+        <div class='panel'>
+            <div class='panel-title'>Ⅳ 员工业绩榜 (9月)</div>
+            <div style='overflow-y:auto; max-height: 85%;'>
+                <table>
+                    <thead><tr><th>排名</th><th>姓名</th><th>实收(USD)</th><th>完成率</th><th>状态</th></tr></thead>
+                    <tbody id='rows'></tbody>
+                </table>
             </div>
         </div>
-        <div class='card'>
-            <h3>🛡️ 信保贴网实收</h3>
-            <div class='big-number' id='libao-val'>$0</div>
-            <div style='font-size:12px;color:#8492a6;'>完成率: <b id='libao-pct'>0%</b> | 目标: <span id='libao-target'>$0</span></div>
+        <div class='panel'>
+            <div class='panel-title'>Ⅱ 核心分析</div>
+            <div style='line-height:1.8; color:#b0c4de; font-size:15px;'>
+                大资金当前进度 <b>84.2%</b>。<br>
+                🚨 <b>日均冲刺缺口：$1,012,573</b><br><br>
+                截止美西时间 9/30，建议：<br>
+                1. 罗丽如表现领先，其模式可复用于其他小组。<br>
+                2. ACP 业务目前表现平稳(85.8%)，需继续保持。<br>
+                3. 整体缺口仍有千万美金，请全员开启战时模式。
+            </div>
         </div>
-        <div class='card'>
-            <h3>📈 ACP 关联规模</h3>
-            <div class='big-number' id='acp-val'>$0</div>
-            <div style='font-size:12px;color:#8492a6;'>完成率: <b id='acp-pct'>0%</b> | 目标: <span id='acp-target'>$0</span></div>
-        </div>
-    </div>
-    <div class='card' style='margin-top:20px;'>
-        <h3>👤 9月员工英雄榜 (降序排名)</h3>
-        <table>
-            <thead><tr><th>排名</th><th>姓名</th><th>9月实收</th><th>完成率</th><th>状态</th></tr></thead>
-            <tbody id='employee-table'></tbody>
-        </table>
     </div>
     <script>
-        fetch('data_cur.json?t=' + Date.now()).then(r => r.json()).then(data => {
-            document.getElementById('company-name').textContent = data.company.name + ' - ' + data.company.quarter;
-            document.getElementById('update-time').textContent = '更新时间：' + data.update_time;
-            const fmt = v => '$' + v.toLocaleString();
-            document.getElementById('big-fund-val').textContent = fmt(data.company.big_fund_actual);
-            document.getElementById('big-fund-target').textContent = fmt(data.company.big_fund_target);
-            const bfPct = (data.company.big_fund_actual / data.company.big_fund_target * 100).toFixed(1);
-            document.getElementById('big-fund-pct').textContent = bfPct + '%';
-            document.getElementById('big-fund-bar').style.width = Math.min(bfPct, 100) + '%';
-            document.getElementById('libao-val').textContent = fmt(data.company.libao_actual);
-            document.getElementById('libao-target').textContent = fmt(data.company.libao_target);
-            document.getElementById('libao-pct').textContent = (data.company.libao_actual / data.company.libao_target * 100).toFixed(1) + '%';
-            document.getElementById('acp-val').textContent = fmt(data.company.acp_actual);
-            document.getElementById('acp_target').textContent = fmt(data.company.acp_target);
-            const tbody = document.getElementById('employee-table');
-            data.employees.forEach((emp, i) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${i+1}</td><td>${emp.name}</td><td>${fmt(emp.val)}</td><td>${emp.pct}%</td><td><span class='pct-tag' style='background:${emp.pct>=66?"#00ff8822":"#ff4d4d22"};color:${emp.pct>=66?"#00ff88":"#ff4d4d"}'>${emp.pct>=66?"达标":"预警"}</span></td>`;
-                tbody.appendChild(tr);
-            });
+        const employees = [
+            {n: '罗丽如', v: 2739147, p: 74}, {n: '陈海胜', v: 2552554, p: 62},
+            {n: '李海', v: 2483185, p: 56}, {n: '吴振豪', v: 1004458, p: 55},
+            {n: '陈春', 'v': 376064, p: 40}, {n: '萧见乐', v: 402351, p: 39},
+            {n: '林文浩', v: 2069017, p: 38}, {n: '简智强', v: 92834, p: 38},
+            {n: '尹文莉', v: 206786, p: 32}, {n: '黄锐强', v: 281871, p: 30},
+            {n: '张跃', v: 46820, p: 0}
+        ];
+        const rows = document.getElementById('rows');
+        employees.sort((a,b)=>b.p-a.p).forEach((e,i)=>{
+            const tr = document.createElement('tr');
+            const clr = e.p>=66?'var(--green)':'var(--red)';
+            tr.innerHTML = `<td>${i+1}</td><td>${e.n}</td><td>$${e.v.toLocaleString()}</td><td style='color:${clr}'>${e.p}%</td><td><span class='tag' style='background:${clr}22; color:${clr}'>${e.p>=66?'达标':'预警'}</span></td>`;
+            rows.appendChild(tr);
         });
     </script>
 </body>
