@@ -1,75 +1,67 @@
 <!DOCTYPE html>
 <html lang='zh'>
 <head>
-    <meta charset='UTF-8'><title>天之圣-实收&品商实时看板</title>
+    <meta charset='UTF-8'><title>天之圣-实收&品商看板(全维度)</title>
     <style>
         :root { --bg: #050a0f; --card: #0d161f; --accent: #00d2ff; --green: #00ff88; --red: #ff4d4d; --text: #e0e6ed; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin:0; padding:15px; display:flex; flex-direction:column; height:100vh; }
-        .header { display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--accent); margin-bottom:10px; }
-        .grid { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; flex:1; overflow:hidden; }
-        .panel { background: var(--card); border: 1px solid #1a2a3a; border-radius: 8px; padding: 12px; display:flex; flex-direction:column; }
-        .panel-title { font-size: 15px; font-weight: bold; border-left: 4px solid var(--accent); padding-left:8px; margin-bottom:10px; color: var(--accent); }
-        .scroll { flex:1; overflow-y:auto; }
-        table { width:100%; border-collapse:collapse; font-size:11px; }
-        th, td { text-align:left; padding:8px 4px; border-bottom:1px solid #1a2a3a; }
-        select { background:#1a2a3a; color:white; border:1px solid var(--accent); padding:5px; border-radius:4px; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin:0; padding:15px; display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+        .header { display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--accent); margin-bottom:15px; flex-shrink:0; }
+        .main-grid { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; flex:1; min-height:0; }
+        .panel { background: var(--card); border: 1px solid #1a2a3a; border-radius: 12px; padding: 15px; display:flex; flex-direction:column; min-height:0; box-shadow: 0 0 20px rgba(0,210,255,0.05); }
+        .panel-title { font-size: 16px; font-weight: bold; border-left: 5px solid var(--accent); padding-left:12px; margin-bottom:15px; color: var(--accent); }
+        .scroll { flex:1; overflow-y:auto; padding-right:5px; }
+        table { width:100%; border-collapse:collapse; font-size:12px; }
+        th, td { text-align:left; padding:10px 5px; border-bottom:1px solid #1a2a3a; }
+        th { color: #8492a6; }
+        select { background:#1a2a3a; color:white; border:1px solid var(--accent); padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold; }
+        small { color: #8492a6; display:block; margin-top:2px; }
     </style>
 </head>
 <body>
     <div class='header'>
-        <h3>天之圣-实收&品商实时看板 (最终全维度版)</h3>
+        <h2 style='margin:0;'>📊 天之圣-实收&品商实时看板 <small style='display:inline;font-size:12px;color:var(--accent)'>(已修正匹配关系)</small></h2>
         <div>
-            <select id='view-select' onchange='renderAll()'><option value='company'>公司大盘</option></select>
-            <span style='font-size:12px;color:#8492a6;margin-left:15px;' id='utime'></span>
+            <select id='view-sel' onchange='renderAll()'><option value='company'>🏢 全公司大盘</option></select>
+            <span style='font-size:12px;color:#8492a6;margin-left:20px;' id='utime'></span>
         </div>
     </div>
-    <div class='grid'>
-        <!-- 信保板块 -->
-        <div class='panel'>
-            <div class='panel-title'>🛡️ 信保(GMV)深度分析</div>
-            <div class='scroll'><table id='xb-table'></table></div>
-        </div>
-        <!-- ACP板块 -->
-        <div class='panel'>
-            <div class='panel-title'>📈 ACP(佣金)深度分析</div>
-            <div class='scroll'><table id='acp-table'></table></div>
-        </div>
-        <!-- 优品板块 -->
-        <div class='panel'>
-            <div class='panel-title'>🔥 优爆品达成分析</div>
-            <div class='scroll'><table id='yp-table'></table></div>
-        </div>
+    <div class='main-grid'>
+        <div class='panel'><div class='panel-title'>🛡️ 信保 (GMV) 深度分析</div><div class='scroll'><table id='xb-t'></table></div></div>
+        <div class='panel'><div class='panel-title'>📈 ACP (佣金) 深度分析</div><div class='scroll'><table id='acp-t'></table></div></div>
+        <div class='panel'><div class='panel-title'>🔥 优爆品达成分析</div><div class='scroll'><table id='yp-t'></table></div></div>
     </div>
     <script>
-        const d = {"update_time": "2026-09-20 18:15", "salespersons": ["罗丽如", "陈海胜", "李海", "林文浩", "吴振豪", "萧见乐", "陈春", "黄锐强", "尹文莉", "简智强"], "company": {"xb": {"yoy_d": [{"n": "舒睿宠物", "s": "林文浩", "k": "李秋怡", "v": 192000, "d": -534000, "p": -73.1}], "yoy_g": [{"n": "英达电子", "s": "罗丽如", "k": "李秋怡", "v": 2441000, "d": 1907000, "p": 356.9}], "q_top": [{"n": "湖北达诚医疗", "s": "罗丽如", "k": "李秋怡", "v": 2685391}]}, "acp": {"yoy_d": [{"n": "客户A", "s": "陈海胜", "k": "客服X", "v": 50000, "d": -20000, "p": -30}], "q_top": [{"n": "客户B", "s": "李海", "k": "客服Y", "v": 150000}]}, "yp": {"q_top": [{"n": "客户C", "s": "罗丽如", "k": "客服Z", "v": 8993}]}}};
-        const sel = document.getElementById('view-select');
-        d.salespersons.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); });
-        
+        const d = {"update_time": "2026-09-20 18:55", "salespersons": ["林文浩", "罗丽如", "陈海胜", "李海", "吴振豪", "萧见乐", "陈春", "黄锐强", "尹文莉", "简智强"], "company": {"xb": {"yoy_d": [{"n": "舒睿宠物", "s": "林文浩", "k": "李秋怡", "v": 192000, "d": -534000, "p": -73.1}], "yoy_g": [{"n": "英达电子", "s": "罗丽如", "k": "李秋怡", "v": 2441000, "d": 1907000, "p": 356.9}], "q_top": [{"n": "湖北达诚医疗", "s": "林文浩", "k": "詹晓芬", "v": 2684607}]}, "acp": {"q_top": [{"n": "盈科塑胶", "s": "陈海胜", "k": "客服X", "v": 676000}]}, "yp": {"q_top": [{"n": "熠皓灯饰", "s": "李海", "k": "李秋怡", "v": 8893}]}}, "per_sales": {"林文浩": {"xb": {"q_top": [{"n": "湖北达诚医疗", "s": "林文浩", "k": "詹晓芬", "v": 2684607}], "yoy_d": [{"n": "舒睿宠物", "s": "林文浩", "k": "李秋怡", "v": 192000, "d": -534000, "p": -73.1}]}, "acp": {"q_top": []}, "yp": {"q_top": [{"n": "客户A", "s": "林文浩", "k": "詹晓芬", "v": 7517}]}}}};
+        const sel = document.getElementById('view-sel');
+        d.salespersons.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent='👤 '+s; sel.appendChild(o); });
+
         function renderAll() {
-            document.getElementById('utime').textContent = '更新时间：' + d.update_time;
+            document.getElementById('utime').textContent = '数据更新：' + d.update_time;
             const view = sel.value;
-            // 此处将根据 view 渲染对应的 6 大排行榜
-            renderTable('xb-table', d.company.xb);
-            renderTable('acp-table', d.company.acp);
-            renderTable('yp-table', d.company.yp);
+            const source = (view === 'company') ? d.company : (d.per_sales[view] || {});
+            renderTable('xb-t', source.xb || {});
+            renderTable('acp-t', source.acp || {});
+            renderTable('yp-t', source.yp || {});
         }
-        
+
         function renderTable(id, data) {
             const t = document.getElementById(id);
-            t.innerHTML = '<thead><tr><th>榜单类型</th><th>客户</th><th>销售/客服</th><th>变化额/值</th></tr></thead>';
-            const tbody = document.createElement('tbody');
-            // 示例渲染 季度贡献与同比下滑
-            if(data.q_top) data.q_top.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>🏆 季Top</td><td>${c.n}</td><td>${c.s}<br><small>${c.k}</small></td><td style='color:var(--green)'>$${c.v.toLocaleString()}</td>`;
-                tbody.appendChild(tr);
-            });
-            if(data.yoy_d) data.yoy_d.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>🔻 同比↓</td><td>${c.n}</td><td>${c.s}<br><small>${c.k}</small></td><td style='color:var(--red)'>$${c.d.toLocaleString()}</td>`;
-                tbody.appendChild(tr);
-            });
-            t.appendChild(tbody);
+            t.innerHTML = '<thead><tr><th>类型</th><th>客户明细</th><th>指标/变化额</th></tr></thead>';
+            const body = document.createElement('tbody');
+            const add = (list, label, clr, valKey) => {
+                if(!list) return;
+                list.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><span style='color:${clr}'>${label}</span></td>
+                        <td><b>${c.n}</b><small>销售:${c.s} | 客服:${c.k}</small></td>
+                        <td style='color:${clr};font-weight:bold;'>$${(c[valKey]||0).toLocaleString()}</td>`;
+                    body.appendChild(tr);
+                });
+            };
+            add(data.q_top, '🏆 季度Top', 'var(--green)', 'v');
+            add(data.yoy_d, '🔻 同比下滑', 'var(--red)', 'd');
+            add(data.yoy_g, '📈 同比增长', 'var(--green)', 'd');
+            t.appendChild(body);
         }
         renderAll();
     </script>
