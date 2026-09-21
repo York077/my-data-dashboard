@@ -1,75 +1,181 @@
 <!DOCTYPE html>
-<html lang='zh'>
+<html lang="zh-CN">
 <head>
-    <meta charset='UTF-8'><title>指挥看板 V32 全自动更新</title>
+    <meta charset="UTF-8">
+    <title>天之圣业务指挥看板 - 销售个人进度</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --bg: #010409; --card: #0d1117; --accent: #00d2ff; --green: #00ff88; --orange: #ffa500; --red: #ff4d4d; --gold: #ffd700; --text: #e6edf3; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin:0; padding:15px; overflow-x:hidden; overflow-y:auto; min-height:100vh; }
-        .header { display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid var(--accent); margin-bottom:15px; height:60px; }
-        .s-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:20px; }
-        .s-card { background: var(--card); border: 1px solid #30363d; border-radius: 10px; padding: 12px; }
-        .s-val { font-size: 20px; font-weight:bold; color: var(--green); margin:5px 0; }
-        .gold-card { border: 2px solid var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.15); }
-        .panel { background: #0d1117; border: 1px solid #30363d; border-radius: 12px; padding: 15px; margin-bottom:20px; }
-        .wrap { overflow-x: auto; scrollbar-width: thin; }
-        table { width:100%; border-collapse:collapse; font-size:11px; min-width:1300px; }
-        th { background: #161b22; color: var(--accent); padding:12px 8px; border-bottom: 2px solid #30363d; }
-        td { padding:10px 8px; border-bottom:1px solid #30363d; text-align:center; }
-        .fix { position:sticky; left:0; background:#0d1117; z-index:5; border-right:2px solid #30363d; }
-        .grid-3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; }
-        .list-box { background:#0d1117; border:1px solid #30363d; border-radius:12px; padding:12px; min-height:500px; }
-        .group-h { background:#161b22; padding:6px 12px; font-size:12px; color:var(--accent); border-radius:4px; margin: 15px 0 6px 0; font-weight: bold; border-left:4px solid var(--accent); }
+        :root { --bg: #010409; --sidebar: #0d1117; --card: #161b22; --accent: #00d2ff; --green: #00ff88; --text: #e6edf3; --border: #30363d; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 220px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); text-align: center; color: var(--accent); font-weight: bold; }
+        .sales-list { flex: 1; overflow-y: auto; list-style: none; padding: 0; margin: 0; }
+        .sales-list li { padding: 12px 20px; cursor: pointer; border-bottom: 1px solid var(--border); transition: 0.2s; font-size: 14px; }
+        .sales-list li:hover { background: #1f2937; }
+        .sales-list li.active { background: var(--accent); color: #000; font-weight: bold; }
+        
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent); background: var(--sidebar); }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .stat-item { text-align: center; }
+        .stat-label { font-size: 13px; color: #8b949e; margin-bottom: 8px; }
+        .stat-value { font-size: 22px; font-weight: bold; color: var(--green); }
+        
+        .progress-container { margin-top: 10px; height: 8px; background: #000; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); width: 0%; transition: width 0.8s ease-in-out; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th { text-align: left; padding: 12px 15px; background: #21262d; color: var(--accent); border-bottom: 2px solid var(--border); }
+        td { padding: 10px 15px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: rgba(0,210,255,0.05); }
+
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-right: 5px; }
+        .tag-xb { background: rgba(0,210,255,0.2); color: var(--accent); border: 1px solid var(--accent); }
+        .tag-acp { background: rgba(0,255,136,0.2); color: var(--green); border: 1px solid var(--green); }
     </style>
 </head>
 <body>
-    <div class='header'>
-        <h2 style='margin:0;'>📊 天之圣-指挥旗舰大屏 <small style='color:var(--accent);'>🚨 V32 全自动更新 | 进度追踪 | 数据源：OneTouch 2026-09-21</small></h2>
-        <div style='color:var(--accent); font-weight:bold;'>更新时间: 2026-09-21 09:30</div>
+    <div class="sidebar">
+        <div class="sidebar-header">销售成员</div>
+        <ul id="salesList" class="sales-list">
+            <li onclick="loadSales('OVERALL')" id="li-OVERALL" class="active">🏢 公司整体</li>
+            <!-- 动态加载销售 -->
+        </ul>
     </div>
-    <div id='sum-box' class='s-row'>
-        <div class='s-card'>🛡️ 信保实收(月):<div class='s-val'>$12,409,644</div></div>
-        <div class='s-card'>📈 ACP实收(月):<div class='s-val'>$2,252,347</div></div>
-        <div class='s-card'>🔥 优品当前:<div class='s-val'>48,665个</div></div>
-        <div class='s-card gold-card'>💰 季度完成率:<div class='s-val'>81%</div></div>
-    </div>
-    <div class='panel' id='progress-panel'>
-        <div style='font-size:14px;color:var(--accent);font-weight:bold;margin-bottom:10px;'>📌 进度｜优爆品目标对标 54,149</div>
-        <div id='progress-summary' class='s-row' style='margin-bottom:0;'>
-            <div class='s-card'><div>目标对标</div><div class='s-val'>54,149 个</div></div>
-            <div class='s-card'><div>当前完成</div><div class='s-val'>48,665 个</div></div>
-            <div class='s-card'><div>完成率</div><div class='s-val'>89.9%</div></div>
-            <div class='s-card gold-card'><div>信保每日冲刺</div><div class='s-val'>$1,101,372 /日</div></div>
+    <div class="main">
+        <div class="header">
+            <h2 id="title">📊 天之圣-数据大屏 <small id="subtitle">全自动更新</small></h2>
+            <div id="updateTime" style="font-size: 12px; color: var(--accent);">更新时间: --</div>
         </div>
-        <div style='font-size:11px;color:#8492a6;margin-top:8px;'>注：冲刺额基于 9 月剩余 10 天计算。</div>
+        <div class="content">
+            <div class="card stat-grid">
+                <div class="stat-item">
+                    <div class="stat-label">信保实收进度</div>
+                    <div id="xbValue" class="stat-value">$0</div>
+                    <div class="progress-container"><div id="xbProgress" class="progress-fill"></div></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">ACP 佣金进度</div>
+                    <div id="acpValue" class="stat-value">$0</div>
+                    <div class="progress-container"><div id="acpProgress" class="progress-fill"></div></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">优爆品当前 (对标 54,149)</div>
+                    <div id="ypValue" class="stat-value">0</div>
+                    <div class="progress-container"><div id="ypProgress" class="progress-fill"></div></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">季度整体完成率</div>
+                    <div id="qRate" class="stat-value" style="color: #ffa500;">0%</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 id="tableTitle" style="margin-top:0;">🛡️ 季度客户业绩产出明细</h3>
+                <div style="overflow-x:auto;">
+                    <table id="customerTable">
+                        <thead>
+                            <tr>
+                                <th>客户名称</th>
+                                <th>销售人员</th>
+                                <th>季度实收 (USD)</th>
+                                <th>同比增长 (%)</th>
+                                <th>客服归属</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerBody">
+                            <!-- 数据行 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class='panel'>
-        <div style='font-size:14px;color:var(--accent);font-weight:bold;margin-bottom:10px;'>👥 销售实绩与冲刺进度</div>
-        <div class='wrap'><table><thead><tr><th class='fix'>销售</th><th>季度完成率</th><th>月度完成率</th><th>优爆品当前</th><th>优爆品目标</th><th>信保月度实收</th><th>ACP月度实收</th></tr></thead><tbody id='progress-body'></tbody></table></div>
-    </div>
+
     <script>
-        const d = {
-            "salespersons": ["罗丽如", "李海", "林文浩", "陈海胜", "吴振豪", "萧见乐", "黄锐强", "陈春", "简智强", "尹文莉", "张跃"],
-            "stats": {
-                "罗丽如": {"xq": 75.0, "xm": 84.9, "yc": 7966, "yt": 6700, "xb": 3141068, "acp": 442199},
-                "李海": {"xq": 56.0, "xm": 55.8, "yc": 8893, "yt": 9621, "xb": 2497935, "acp": 171713},
-                "林文浩": {"xq": 38.0, "xm": 38.1, "yc": 7517, "yt": 7869, "xb": 2085372, "acp": 127747},
-                "陈海胜": {"xq": 63.0, "xm": 62.5, "yc": 6648, "yt": 7498, "xb": 2591498, "acp": 320407},
-                "吴振豪": {"xq": 56.0, "xm": 55.7, "yc": 5325, "yt": 6219, "xb": 1025536, "acp": 348817},
-                "萧见乐": {"xq": 41.0, "xm": 40.9, "yc": 3880, "yt": 3774, "xb": 419517, "acp": 258461},
-                "黄锐强": {"xq": 64.0, "xm": 70.0, "yc": 3030, "yt": 2931, "xb": 663332, "acp": 0},
-                "陈春": {"xq": 40.0, "xm": 40.4, "yc": 3304, "yt": 3841, "xb": 378132, "acp": 149545},
-                "简智强": {"xq": 38.0, "xm": 38.0, "yc": 1699, "yt": 1400, "xb": 93320, "acp": 2418},
-                "尹文莉": {"xq": 32.0, "xm": 31.8, "yc": 388, "yt": 597, "xb": 206786, "acp": 31040},
-                "张跃": {"xq": 0, "xm": 0, "yc": 0, "yt": 0, "xb": 46820, "acp": 0}
+        let rawData = null;
+
+        async function init() {
+            try {
+                const response = await fetch('data_cur.json');
+                rawData = await response.json();
+                
+                document.getElementById('updateTime').innerText = '更新时间: ' + rawData.update_time;
+                
+                const list = document.getElementById('salesList');
+                rawData.salespersons.forEach(name => {
+                    const li = document.createElement('li');
+                    li.id = 'li-' + name;
+                    li.innerText = '👤 ' + name;
+                    li.onclick = () => loadSales(name);
+                    list.appendChild(li);
+                });
+                
+                loadSales('OVERALL');
+            } catch (e) {
+                console.error("加载数据失败:", e);
+                document.getElementById('title').innerText = "数据加载失败，请检查端口";
             }
-        };
-        const body = document.getElementById('progress-body');
-        d.salespersons.forEach(name => {
-            const r = d.stats[name];
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td class='fix'><b>${name}</b></td><td>${r.xq}%</td><td>${r.xm}%</td><td>${r.yc.toLocaleString()}</td><td>${r.yt.toLocaleString()}</td><td>$${r.xb.toLocaleString()}</td><td>$${r.acp.toLocaleString()}</td>`;
-            body.appendChild(tr);
-        });
+        }
+
+        function loadSales(name) {
+            document.querySelectorAll('.sales-list li').forEach(el => el.classList.remove('active'));
+            document.getElementById('li-' + name).classList.add('active');
+
+            let xb = 0, acp = 0, yp = 0, qRate = 0;
+            let customers = [];
+
+            if (name === 'OVERALL') {
+                document.getElementById('title').innerHTML = "📊 天之圣-公司整体 <small>进度追踪</small>";
+                // 汇总逻辑
+                xb = rawData.company.xb.q_top.reduce((a, b) => a + b.v, 0);
+                acp = rawData.company.acp.q_top.reduce((a, b) => a + b.v, 0);
+                yp = rawData.company.yp.q_top.reduce((a, b) => a + b.v, 0);
+                qRate = 81; // 示例写死，可根据 rawData 计算
+                customers = rawData.company.xb.q_top;
+            } else {
+                document.getElementById('title').innerHTML = `👤 销售个人看板: ${name} <small>进度追踪</small>`;
+                const sData = rawData.per_sales[name];
+                if (sData) {
+                    xb = sData.xb.q_top.reduce((a, b) => a + b.v, 0);
+                    acp = sData.acp.q_top.reduce((a, b) => a + b.v, 0);
+                    yp = sData.yp.q_top.reduce((a, b) => a + b.v, 0);
+                    customers = sData.xb.q_top;
+                    // 假设目标的计算逻辑
+                    qRate = (xb / 500000 * 100).toFixed(1); // 模拟比例
+                }
+            }
+
+            document.getElementById('xbValue').innerText = '$' + Math.round(xb).toLocaleString();
+            document.getElementById('xbProgress').style.width = Math.min((xb / 12000000 * 100), 100) + '%';
+            
+            document.getElementById('acpValue').innerText = '$' + Math.round(acp).toLocaleString();
+            document.getElementById('acpProgress').style.width = Math.min((acp / 2500000 * 100), 100) + '%';
+            
+            document.getElementById('ypValue').innerText = Math.round(yp).toLocaleString();
+            document.getElementById('ypProgress').style.width = Math.min((yp / 54149 * 100), 100) + '%';
+            
+            document.getElementById('qRate').innerText = qRate + '%';
+
+            const tbody = document.getElementById('customerBody');
+            tbody.innerHTML = '';
+            customers.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${c.n}</b></td>
+                    <td>${c.s}</td>
+                    <td style="color:var(--green)">$${Math.round(c.v).toLocaleString()}</td>
+                    <td style="color:${c.p > 0 ? 'var(--green)' : '#ff4d4d'}">${c.p}%</td>
+                    <td>${c.k || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        init();
     </script>
 </body>
 </html>
