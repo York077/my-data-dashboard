@@ -167,8 +167,8 @@
                 tr.innerHTML = `
                     <td><b>${c.n}</b></td>
                     <td>${c.s}</td>
-                    <td style="color:var(--green)">$${Math.round(c.v).toLocaleString()}</td>
-                    <td style="color:${c.p > 0 ? 'var(--green)' : '#ff4d4d'}">${c.p}%</td>
+                    <td style="color:var(--green)">$${Math.round(c.v || 0).toLocaleString()}</td>
+                    <td style="color:${c.p > 0 ? 'var(--green)' : (c.p < 0 ? '#ff4d4d' : 'var(--text)')}">${isNaN(c.p) ? '-' : c.p + '%'}</td>
                     <td>${c.k || '-'}</td>
                 `;
                 tbody.appendChild(tr);
