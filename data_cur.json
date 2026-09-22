@@ -1,62 +1,73 @@
 {
+  "update_time": "2026-09-22 11:13",
   "meta": {
-    "source": "OneTouch 数据罗盘",
-    "source_url": "https://onetouch-partner.alibaba.com/ptnBasedata/luyou/data-compass.htm",
-    "account_entity": "天之圣外贸服务(广东)有限公司",
-    "capture_time": "2026-09-22 10:49:37 Asia/Shanghai",
-    "as_of": "2026-09-22",
+    "account": "天之圣外贸服务(广东)有限公司",
     "deadline": "2026-09-30",
-    "remaining_calendar_days_for_sprint": 8,
-    "refresh_note": "每日冲刺额为月度差额÷9月23日至9月30日8个自然日的推导值，页面未提供显式日冲刺字段。"
+    "days_remaining": 8,
+    "q3_period": "2026-07-01~2026-09-21",
+    "company_yoy_pct": 12.81
   },
   "company": {
-    "xinbao": {
-      "quarterly": {"completion_rate": 82, "target_usd": 61850531, "progress_usd": 51019715, "gap_usd": 10830815},
-      "monthly": {"period": "2026.09", "completion_rate": 57, "target_usd": 23423357, "progress_usd": 13372396, "gap_usd": 10050960},
-      "monthly_breakdown_usd": {"GMV实收": 13464107, "TAO实收": 4011981, "TAD实收": 7087316, "TAS实收": 1503444, "TAP实收": 55923},
-      "daily_sprint_to_0930_usd": 1256370,
-      "daily_sprint_formula": "10,050,960 ÷ 8"
+    "xb": {
+      "q_rate": 83,
+      "q_target": 61850531,
+      "q_progress": 51112060,
+      "m_rate": 57,
+      "m_target": 23423357,
+      "m_progress": 13464741,
+      "daily_sprint": 1244827
     },
     "acp": {
-      "commission_receipt_usd": 10566875.14,
-      "higher_tier_gap_usd": 2433124.86,
-      "qualified_tier_excess_usd": 566875.14,
-      "weighted_quarter_receipt_usd": 60962498.55,
-      "weighted_completion_rate": 99,
-      "fy27q1": {"target_usd": 54991983, "completion_rate": 95.76, "stat_gmv_usd": 52660221.99, "data_update": "2026-09-20"},
-      "home_card_completion_rate": 0,
-      "home_card_value_usd": 12226071,
-      "home_card_value_note": "页面未明确该值是目标还是进展，待核实"
+      "q_rate": 99,
+      "receipt": 10566875.14,
+      "fy27q1_rate": 95.76
     },
-    "youbaopin": {
+    "yp": {
       "current": 48963,
-      "quarter_target": 54149,
-      "completion_rate": 90.4,
-      "online_products": 555417,
-      "service_customers": 879,
-      "customers_with_youbaopin": 778,
-      "customer_coverage_rate": 88.51,
-      "product_ratio": 8.8,
-      "last_month_end": 47241,
-      "data_date": "2026-09-20"
+      "target": 54149,
+      "rate": 90.4
     },
-    "staff_summary": {"total_people": 18, "sales_customer_ratio": 179.5, "service_customer_ratio": 359, "retention_180d": 100, "customer_staff_subtab": "页面显示没有数据"}
+    "top_customers": [
+      {"n":"湖北达诚医疗科技有限公司","s":"林文浩","k":"詹晓芬","v":2684607,"p":50.03},
+      {"n":"东莞英达电子有限公司","s":"罗丽如","k":"陈晓平","v":2442858,"p":357.19},
+      {"n":"东莞市盈科塑胶制品有限公司","s":"陈海胜","k":"陈惠芬","v":1407781,"p":16.62},
+      {"n":"东莞市康柔电器科技有限公司","s":"李海","k":"李嘉荣","v":1122448,"p":124.69},
+      {"n":"东莞市聚力复合材料科技有限公司","s":"李海","k":"陈惠芬","v":1099259,"p":432.94},
+      {"n":"东莞市聚力复合材料科技有限公司","s":"李海","k":"陈惠芬","v":1092040,"p":35.8},
+      {"n":"东莞市汇鑫华翼汽车配件科技有限公司","s":"陈海胜","k":"詹晓芬","v":926678,"p":52.1},
+      {"n":"东莞风池电掣新能源科技有限公司","s":"林文浩","k":"詹晓芬","v":722597,"p":-5.74},
+      {"n":"东莞市涵阳宠物用品有限公司","s":"林文浩","k":"陈惠芬","v":696078,"p":146.14},
+      {"n":"东莞市集优照明科技有限公司","s":"罗丽如","k":"詹晓芬","v":670905,"p":96.32},
+      {"n":"东莞市拓普锐集成房屋有限公司","s":"李海","k":"李嘉荣","v":641102,"p":50.0},
+      {"n":"广东笑纳包装有限公司","s":"李海","k":"李嘉荣","v":625380,"p":343.83},
+      {"n":"东莞市仟威机械设备科技有限公司","s":"陈海胜","k":"李嘉荣","v":623049,"p":45.56},
+      {"n":"东莞市文锋硅胶制品有限公司","s":"林文浩","k":"陈惠芬","v":550974,"p":-4.88},
+      {"n":"广东硕为科技有限公司","s":"罗丽如","k":"李秋怡","v":541104,"p":-18.97},
+      {"n":"东莞市久倍压缩机配件有限公司","s":"林文浩","k":"李秋怡","v":534223,"p":95.51},
+      {"n":"东莞市文锋硅胶制品有限公司","s":"林文浩","k":"陈惠芬","v":511416,"p":92.5},
+      {"n":"东莞凹凸贸易有限公司","s":"罗丽如","k":"李嘉荣","v":507960,"p":156.61},
+      {"n":"深圳市贝加尔帐篷有限公司","s":"李海","k":"李秋怡","v":500984,"p":-26.34},
+      {"n":"东莞市科驰立实业有限公司","s":"罗丽如","k":"陈晓平","v":487165,"p":-18.41}
+    ]
   },
-  "staff": [
-    {"name":"张跃","type":"sales","xinbao_usd":46820,"time_progress":70,"national_rank":2770,"region_rank":565,"acp_usd":0,"large_receipt_usd":46820},
-    {"name":"陈惠芬","type":"supervisor","xinbao_usd":3686744,"time_progress":70,"national_rank":613,"region_rank":130,"acp_usd":368683,"large_receipt_usd":4073579},
-    {"name":"李秋怡","type":"supervisor","xinbao_usd":2026389,"time_progress":70,"national_rank":1174,"region_rank":237,"acp_usd":391212,"large_receipt_usd":2451879},
-    {"name":"林文浩","type":"sales","xinbao_usd":2204844,"time_progress":70,"national_rank":1092,"region_rank":222,"acp_usd":127746,"large_receipt_usd":2347245},
-    {"name":"詹晓芬","type":"supervisor","xinbao_usd":2584923,"time_progress":70,"national_rank":936,"region_rank":193,"acp_usd":450737,"large_receipt_usd":3043251},
-    {"name":"陈春","type":"sales","xinbao_usd":401279,"time_progress":70,"national_rank":2308,"region_rank":456,"acp_usd":149544,"large_receipt_usd":561630},
-    {"name":"简智强","type":"sales","xinbao_usd":97364,"time_progress":70,"national_rank":2678,"region_rank":552,"acp_usd":2417,"large_receipt_usd":100443},
-    {"name":"尹文莉","type":"sales","xinbao_usd":208215,"time_progress":70,"national_rank":2517,"region_rank":516,"acp_usd":31040,"large_receipt_usd":239255},
-    {"name":"李嘉荣","type":"supervisor","xinbao_usd":2855986,"time_progress":70,"national_rank":832,"region_rank":167,"acp_usd":314251,"large_receipt_usd":3219498}
-  ],
-  "limitations": [
-    "客服员工子页显示没有数据，无法建立可靠的客服人员明细关联。",
-    "ACP 首页卡片仅显示 0% 与 12,226,071，未单独渲染进展值；该值标记为待核实。",
-    "页面未提供显式每日冲刺额，本页按月度差额÷8个剩余自然日推导。",
-    "员工管理共18人，本次可见第1页9人。"
-  ]
+  "salespersons": ["陈惠芬","陈海胜","李嘉荣","罗丽如","李海","詹晓芬","李秋怡","林文浩","吴振豪","谢祥玉","陈晓平","黄锐强","萧见乐","陈春","尹文莉","简智强","张跃"],
+  "per_sales": {
+    "陈惠芬": {"xb":3686744,"acp":368683,"large":4073579,"rank":130,"type":"supervisor"},
+    "陈海胜": {"xb":2988803,"acp":366892,"large":3404810,"rank":163,"type":"sales"},
+    "李嘉荣": {"xb":2855986,"acp":314251,"large":3219498,"rank":167,"type":"supervisor"},
+    "罗丽如": {"xb":2838026,"acp":503574,"large":3356738,"rank":173,"type":"sales"},
+    "李海": {"xb":2625911,"acp":172817,"large":2812347,"rank":189,"type":"sales"},
+    "詹晓芬": {"xb":2584923,"acp":450737,"large":3043251,"rank":193,"type":"supervisor"},
+    "陈晓平": {"xb":1895813,"acp":554221,"large":2457842,"rank":251,"type":"supervisor"},
+    "李秋怡": {"xb":2026389,"acp":391212,"large":2451879,"rank":237,"type":"supervisor"},
+    "林文浩": {"xb":2204844,"acp":127746,"large":2347245,"rank":222,"type":"sales"},
+    "吴振豪": {"xb":1082513,"acp":351956,"large":1442754,"rank":339,"type":"sales"},
+    "谢祥玉": {"xb":238534,"acp":0,"large":238534,"rank":505,"type":"supervisor"},
+    "萧见乐": {"xb":457297,"acp":280825,"large":739840,"rank":446,"type":"sales"},
+    "黄锐强": {"xb":337315,"acp":92290,"large":432699,"rank":468,"type":"sales"},
+    "陈春": {"xb":401279,"acp":149544,"large":561630,"rank":456,"type":"sales"},
+    "尹文莉": {"xb":208215,"acp":31040,"large":239255,"rank":516,"type":"sales"},
+    "简智强": {"xb":97364,"acp":2417,"large":100443,"rank":552,"type":"sales"},
+    "张跃": {"xb":46820,"acp":0,"large":46820,"rank":565,"type":"sales"}
+  }
 }
